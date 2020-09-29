@@ -1,0 +1,46 @@
+# This workflow runs static analysis on RepoBee
+
+name: update-readme
+
+on:
+  push:
+    branches: [ source ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Update README
+      run: |
+        python update.py
+    - name: Commit files on master
+      run: |
+        git config --local user.email "slarse@slar.se"
+        git config --local user.name "Simon Larsén"
+
+        git branch master
+        git update-ref refs/heads/master $(git rev-parse refs/remotes/origin/master)
+        git symbolic-ref HEAD refs/heads/master
+        git add --force .
+        git commit -m "Update README"
+
+        # if there were no changes, the commit will fail, but we don't actually
+        # care about that and so exit 0 anyway
+        exit 0
+    - name: Show log
+      run: |
+        git log --oneline
+    - name: Push changes
+      run: |
+        git push https://slarse:${{ secrets.GITHUB_TOKEN }}@github.com/slarse/slarse.git

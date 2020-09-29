@@ -32,6 +32,7 @@ jobs:
         git symbolic-ref HEAD refs/heads/master
         git add --force .
         git commit -m "Update README"
+        git log --oneline
 
         # if there were no changes, the commit will fail, but we don't actually
         # care about that and so exit 0 anyway

@@ -37,7 +37,7 @@ jobs:
         # care about that and so exit 0 anyway
         exit 0
     - name: Show log
-    - run: |
+      run: |
         git log --oneline
     - name: Push changes
       run: |

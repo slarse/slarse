@@ -5,6 +5,8 @@ name: update-readme
 on:
   push:
     branches: [ source ]
+  schedule:
+  - cron: "0 0 * * *"
 
 jobs:
   build:

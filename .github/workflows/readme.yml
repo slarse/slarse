@@ -7,7 +7,6 @@ on:
     branches: [ source ]
   schedule:
   - cron: "0 0 * * *"
-  - branches: [ source ]
 
 jobs:
   build:

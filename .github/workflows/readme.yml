@@ -37,7 +37,8 @@ jobs:
         git branch master || echo "master already exists"
         git update-ref refs/heads/master $(git rev-parse refs/remotes/origin/master)
         git symbolic-ref HEAD refs/heads/master
-        git add --force .
+        git add --force README.md .github
+        git clean -xfd
         # if there were no changes, the commit will fail, but we don't actually
         # care about that and so exit 0 anyway
         git commit -m "Update README" || echo "Nothing to commit"

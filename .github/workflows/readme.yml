@@ -45,7 +45,7 @@ jobs:
             # only the cron job runs on master
             commit_subject="Scheduled refresh of README"
         elif [ "$GITHUB_REF" == "refs/heads/source" ]; then
-            # the source branch was checked out, so we must
+            # reuse the commit message that triggered the build
             commit_subject=$(git log -1 --format=%s "$GITHUB_SHA")
         else
             echo "Unexpected branch $GITHUB_REF"

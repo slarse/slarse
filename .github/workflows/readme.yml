@@ -38,6 +38,7 @@ jobs:
         git update-ref refs/heads/master $(git rev-parse refs/remotes/origin/master)
         git symbolic-ref HEAD refs/heads/master
 
+        git restore --staged .
         git add --force README.md .github
         git clean -xfd
 

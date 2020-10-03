@@ -10,8 +10,8 @@ Git repositories for education. Occasionally, I write a post on [my
 blog](https://slar.se).
 
 ### Latest blog posts
+* [Essential pytest pt. 2: Selecting tests to run](https://slar.se/essential-pytest-2.html)
 * [Thoughts on graduating with an MSc in Computer Science and Engineering](https://slar.se/thoughts-on-graduating-with-an-msc-in-computer-science-and-engineering.html)
 * [The Linux /etc/passwd file, and why it doesn't contain passwords](https://slar.se/etc-passwd.html)
-* [Essential pytest 1: Controlling the verbosity of output](https://slar.se/essential-pytest-1.html)
+* [Essential pytest pt. 1: Controlling the verbosity of output](https://slar.se/essential-pytest-1.html)
 * [Don't use String for method options, use an enum!](https://slar.se/dont-use-string-for-method-options-use-an-enum.html)
-* [Java's Optional: Why you should prefer it over null](https://slar.se/javas-optional-why-you-should-prefer-it-over-null.html)

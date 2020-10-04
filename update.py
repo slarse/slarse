@@ -1,5 +1,6 @@
 import textwrap
 import pathlib
+import re
 
 import tabulate
 import feedparser
@@ -28,13 +29,15 @@ def get_blog_post_list(feed_url: str, num_posts: int) -> str:
     raw_feed = requests.get(feed_url).content
     feed = feedparser.parse(raw_feed)
     post_table_rows = [
-        [f"[{entry.title}]({entry.link})", entry.summary, entry.date]
+        [f"[{entry.title}]({entry.link})", clean_out_tags(entry.summary)]
         for entry in feed.entries
     ]
     return tabulate.tabulate(
-        post_table_rows, headers="Title Excerpt Date".split(), tablefmt="github"
+        post_table_rows, headers="Title Excerpt".split(), tablefmt="github"
     )
 
+def clean_out_tags(text: str) -> str:
+    return re.sub("<.*?>", "", text)
 
 if __name__ == "__main__":
     main()

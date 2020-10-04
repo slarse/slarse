@@ -30,7 +30,7 @@ def get_blog_post_list(feed_url: str, num_posts: int) -> str:
     feed = feedparser.parse(raw_feed)
     post_table_rows = [
         [f"[{entry.title}]({entry.link})", clean_excerpt(entry.summary)]
-        for entry in feed.entries
+        for entry in feed.entries[:num_posts]
     ]
     return tabulate.tabulate(
         post_table_rows, headers="Title Excerpt".split(), tablefmt="github"

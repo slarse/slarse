@@ -9,5 +9,8 @@ My most cherished project is [RepoBee](https://repobee.org), a tool to manage
 Git repositories for education. Occasionally, I write a post on [my
 blog](https://slar.se).
 
+### Favorite repos
+{{ repos }}
+
 ### Latest blog posts
 {{ blog_posts }}

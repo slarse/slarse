@@ -47,13 +47,13 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
 
 
 def generate_repo_table(repos: List[str]) -> str:
-    headers = "Name Description Language Badges".split()
+    headers = "Name Description Lang Badges".split()
     repo_data = (get_repo_data(repo) for repo in repos)
     rows = [
         (
             f"[{data['name']}]({data['html_url']})",
             data["description"],
-            f"![{data['language']}]({LANG_IMAGES[data['language'].lower()]})",
+            get_language_image(data['language']),
             " ".join(
                 generate_misc_badges(data) + extract_readme_badges(data["readme"])
             ),
@@ -61,6 +61,13 @@ def generate_repo_table(repos: List[str]) -> str:
         for data in repo_data
     ]
     return tabulate.tabulate(rows, headers=headers, tablefmt="github")
+
+
+def get_language_image(language: str) -> str:
+    return (
+        f'<img src="{LANG_IMAGES[language.lower()]}" '
+        f'alt="{language}" title="{language}" width=32px/>'
+    )
 
 
 def generate_misc_badges(data: dict) -> List[str]:

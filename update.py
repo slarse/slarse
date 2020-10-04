@@ -29,15 +29,17 @@ def get_blog_post_list(feed_url: str, num_posts: int) -> str:
     raw_feed = requests.get(feed_url).content
     feed = feedparser.parse(raw_feed)
     post_table_rows = [
-        [f"[{entry.title}]({entry.link})", clean_out_tags(entry.summary)]
+        [f"[{entry.title}]({entry.link})", clean_excerpt(entry.summary)]
         for entry in feed.entries
     ]
     return tabulate.tabulate(
         post_table_rows, headers="Title Excerpt".split(), tablefmt="github"
     )
 
-def clean_out_tags(text: str) -> str:
-    return re.sub("<.*?>", "", text)
+def clean_excerpt(text: str) -> str:
+    no_tags = re.sub("<.*?>", "", text)
+    no_newlines = re.sub(r"\n", " ", no_tags)
+    return no_newlines
 
 if __name__ == "__main__":
     main()

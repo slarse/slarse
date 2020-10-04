@@ -1,6 +1,9 @@
+import textwrap
+import pathlib
+
+import tabulate
 import feedparser
 import jinja2
-import pathlib
 import requests
 
 CUR_DIR = pathlib.Path(__file__).parent
@@ -24,10 +27,13 @@ def render_template(template_path: pathlib.Path, blog_posts: str) -> str:
 def get_blog_post_list(feed_url: str, num_posts: int) -> str:
     raw_feed = requests.get(feed_url).content
     feed = feedparser.parse(raw_feed)
-    formatted_posts = "\n".join(
-        [f"* [{entry.title}]({entry.link})" for entry in feed.entries[:num_posts]]
+    post_table_rows = [
+        [f"[{entry.title}]({entry.link})", entry.summary, entry.date]
+        for entry in feed.entries
+    ]
+    return tabulate.tabulate(
+        post_table_rows, headers="Title Excerpt Date".split(), tablefmt="github"
     )
-    return formatted_posts
 
 
 if __name__ == "__main__":

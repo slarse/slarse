@@ -38,7 +38,7 @@ jobs:
         git symbolic-ref HEAD refs/heads/master
 
         git restore --staged .
-        git add --force README.md .github
+        git add --force README.md .github lang_images
         git clean -xfd
 
         if [ "$GITHUB_REF" == "refs/heads/master" ]; then

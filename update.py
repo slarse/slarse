@@ -17,6 +17,12 @@ NUM_POSTS = 5
 
 REPOS = "repobee/repobee repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
 
+LANG_IMAGES = {
+    path.stem.lower(): path.relative_to(CUR_DIR)
+    for path in (CUR_DIR / "lang_images").iterdir()
+    if path.suffix == ".svg"
+}
+
 
 def main():
     blog_posts = generate_blog_post_table(FEED_URL, NUM_POSTS)
@@ -41,12 +47,13 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
 
 
 def generate_repo_table(repos: List[str]) -> str:
-    headers = "Name Description Badges".split()
+    headers = "Name Description Language Badges".split()
     repo_data = (get_repo_data(repo) for repo in repos)
     rows = [
         (
             f"[{data['name']}]({data['html_url']})",
             data["description"],
+            f"![{data['language']}]({LANG_IMAGES[data['language'].lower()]})",
             " ".join(
                 generate_misc_badges(data) + extract_readme_badges(data["readme"])
             ),

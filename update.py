@@ -1,6 +1,7 @@
 import textwrap
 import pathlib
 import re
+import datetime
 
 from typing import List
 
@@ -15,7 +16,8 @@ TEMPLATE_PATH = CUR_DIR / "README_TEMPLATE.md"
 FEED_URL = "https://slar.se/feeds/all.atom.xml"
 NUM_POSTS = 5
 
-REPOS = "repobee/repobee repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
+REPOS = "repobee/repobee SpoonLabs/sorald repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
+USER = "slarse"
 
 LANG_IMAGES = {
     path.stem.lower(): path.relative_to(CUR_DIR)
@@ -32,7 +34,7 @@ def main():
 def render_template(template_path: pathlib.Path, blog_posts: str) -> str:
     content = template_path.read_text(encoding="utf8")
     template = jinja2.Template(content)
-    repos = generate_repo_table(REPOS)
+    repos = generate_repo_table(REPOS, USER)
     return template.render(repos=repos, blog_posts=blog_posts)
 
 
@@ -46,14 +48,14 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
     return tabulate.tabulate(rows, headers="Title Excerpt".split(), tablefmt="github")
 
 
-def generate_repo_table(repos: List[str]) -> str:
+def generate_repo_table(repos: List[str], user: str) -> str:
     headers = "Name Description Lang Badges".split()
-    repo_data = (get_repo_data(repo) for repo in repos)
+    repo_data = (get_repo_data(repo, user) for repo in repos)
     rows = [
         (
             f"[{data['name']}]({data['html_url']})",
             data["description"],
-            get_language_image(data['language']),
+            get_language_image(data["language"]),
             " ".join(
                 generate_misc_badges(data) + extract_readme_badges(data["readme"])
             ),
@@ -71,9 +73,18 @@ def get_language_image(language: str) -> str:
 
 
 def generate_misc_badges(data: dict) -> List[str]:
-    stars = f"![GitHub stars](https://img.shields.io/badge/%E2%AD%90-{data['stargazers_count']}-blue)"
-    last_commit = f"![GitHub last commit](https://img.shields.io/github/last-commit/{data['full_name']})"
-    return [stars, last_commit]
+    stars = (
+        f"![GitHub stars](https://img.shields.io/badge/%E2%AD%90-"
+        "{data['stargazers_count']}-blue)"
+    )
+
+    monthly_commits_badge = (
+        f"![My commits past 30 days]"
+        f"(https://img.shields.io/badge/%23commits%20(30%20days)-"
+        f"{data['num_monthly_commits']}-blue)"
+    )
+    monthly_commits = f"[{monthly_commits_badge}]({data['monthly_commits_web_url']})"
+    return [stars, monthly_commits]
 
 
 def extract_readme_badges(readme: str) -> List[str]:
@@ -89,11 +100,24 @@ def extract_readme_badges(readme: str) -> List[str]:
     ]
 
 
-def get_repo_data(repo: str) -> dict:
-    data = requests.get(f"https://api.github.com/repos/{repo}").json()
+def get_repo_data(repo: str, user: str) -> dict:
+    repo_api_url = f"https://api.github.com/repos/{repo}"
+    data = requests.get(repo_api_url).json()
     data["readme"] = requests.get(
         f"https://raw.githubusercontent.com/{repo}/master/README.md"
     ).content.decode("utf8")
+
+    thirty_days_ago = datetime.date.today() - datetime.timedelta(days=30)
+    monthly_commits_api_url = (
+        f"{repo_api_url}/commits?author={user}&since={thirty_days_ago}"
+    )
+    monthly_commits_web_url = (
+        f"https://github.com/{repo}/commits?author={user}&since={thirty_days_ago}"
+    )
+    monthly_commits = requests.get(monthly_commits_api_url).json()
+    data["num_monthly_commits"] = len(monthly_commits)
+    data["monthly_commits_web_url"] = monthly_commits_web_url
+
     return data
 
 

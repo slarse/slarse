@@ -10,6 +10,10 @@ Git repositories for education. Occasionally, I write a post on [my
 blog](https://slar.se).
 
 ### Favorite repos
+Here's a table of the repos I'm most actively contributing to, or are most
+proud of, or both. Click the `#commits (30 days)` badges for the respective
+repos to see my latest contributions.
+
 {{ repos }}
 
 ### Latest blog posts

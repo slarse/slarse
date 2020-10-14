@@ -73,10 +73,11 @@ def get_language_image(language: str) -> str:
 
 
 def generate_misc_badges(data: dict) -> List[str]:
-    stars = (
+    stars_badge = (
         f"![GitHub stars](https://img.shields.io/badge/%E2%AD%90-"
-        "{data['stargazers_count']}-blue)"
+        f"{data['stargazers_count']}-blue)"
     )
+    stars = f"[{stars_badge}]({data['stargazers_web_url']})"
 
     monthly_commits_badge = (
         f"![My commits past 30 days]"
@@ -117,6 +118,8 @@ def get_repo_data(repo: str, user: str) -> dict:
     monthly_commits = requests.get(monthly_commits_api_url).json()
     data["num_monthly_commits"] = len(monthly_commits)
     data["monthly_commits_web_url"] = monthly_commits_web_url
+
+    data["stargazers_web_url"] = f"https://github.com/{repo}/stargazers"
 
     return data
 

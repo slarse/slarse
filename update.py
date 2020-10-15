@@ -57,7 +57,7 @@ def generate_repo_table(repos: List[str], user: str) -> str:
 
     rows = [
         (
-            f"[{data['name']}]({data['html_url']}) {create_stargazers_badge(data)}",
+            f"[{data['name']}]({data['html_url']})\n{create_stargazers_badge(data)}",
             data["description"],
             get_language_image(data["language"]),
             create_commits_badges(data),

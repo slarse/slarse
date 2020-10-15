@@ -49,16 +49,18 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
 
 
 def generate_repo_table(repos: List[str], user: str) -> str:
-    headers = "Name Description Lang Badges".split()
+    headers = ["Repo", "Description", "Lang", "My Contributions"]
     repo_data = (get_repo_data(repo, user) for repo in repos)
+
+    def create_commits_badges(data: dict) -> str:
+        return f"{create_commits_badge(data)} {create_commits_30_days_badge(data)}"
+
     rows = [
         (
-            f"[{data['name']}]({data['html_url']})",
+            f"[{data['name']}]({data['html_url']}) {create_stargazers_badge(data)}",
             data["description"],
             get_language_image(data["language"]),
-            " ".join(
-                generate_misc_badges(data) + extract_readme_badges(data["readme"])
-            ),
+            create_commits_badges(data),
         )
         for data in repo_data
     ]
@@ -72,20 +74,30 @@ def get_language_image(language: str) -> str:
     )
 
 
-def generate_misc_badges(data: dict) -> List[str]:
-    stars_badge = (
-        f"![GitHub stars](https://img.shields.io/badge/%E2%AD%90-"
-        f"{data['stargazers_count']}-blue)"
-    )
-    stars = f"[{stars_badge}]({data['stargazers_web_url']})"
-
+def create_commits_30_days_badge(data: dict) -> List[str]:
     monthly_commits_badge = (
         f"![My commits past 30 days]"
         f"(https://img.shields.io/badge/%23commits%20(30%20days)-"
         f"{data['num_monthly_commits']}-blue)"
     )
-    monthly_commits = f"[{monthly_commits_badge}]({data['monthly_commits_web_url']})"
-    return [stars, monthly_commits]
+    return f"[{monthly_commits_badge}]({data['monthly_commits_web_url']})"
+
+
+def create_commits_badge(data: dict) -> List[str]:
+    commits_badge = (
+        f"![My commits]"
+        f"(https://img.shields.io/badge/%23commits-"
+        f"{data['contributions']}-blue)"
+    )
+    return f"[{commits_badge}]({data['commits_web_url']})"
+
+
+def create_stargazers_badge(data: dict) -> str:
+    stars_badge = (
+        f"![GitHub stars](https://img.shields.io/badge/%E2%AD%90-"
+        f"{data['stargazers_count']}-blue)"
+    )
+    return f"[{stars_badge}]({data['stargazers_web_url']})"
 
 
 def extract_readme_badges(readme: str) -> List[str]:
@@ -120,6 +132,14 @@ def get_repo_data(repo: str, user: str) -> dict:
     data["monthly_commits_web_url"] = monthly_commits_web_url
 
     data["stargazers_web_url"] = f"https://github.com/{repo}/stargazers"
+
+    data["contributions"] = next(
+        filter(
+            lambda entry: entry["login"] == user,
+            requests.get(f"https://api.github.com/repos/{repo}/contributors").json(),
+        )
+    )["contributions"]
+    data["commits_web_url"] = f"https://github.com/{repo}/commits?author={user}"
 
     return data
 

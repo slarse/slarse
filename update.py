@@ -49,7 +49,7 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
 
 
 def generate_repo_table(repos: List[str], user: str) -> str:
-    headers = ["Repo", "Description", "Lang", "My Contributions"]
+    headers = ["Repo", "Description", "Misc", "My Contributions"]
     repo_data = (get_repo_data(repo, user) for repo in repos)
 
     def create_commits_badges(data: dict) -> str:
@@ -57,9 +57,9 @@ def generate_repo_table(repos: List[str], user: str) -> str:
 
     rows = [
         (
-            f"[{data['name']}]({data['html_url']})\n{create_stargazers_badge(data)}",
+            f"[{data['name']}]({data['html_url']})",
             data["description"],
-            get_language_image(data["language"]),
+            f"{get_language_image(data['language'])} {create_stargazers_badge(data)}",
             create_commits_badges(data),
         )
         for data in repo_data

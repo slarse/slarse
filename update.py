@@ -16,7 +16,7 @@ TEMPLATE_PATH = CUR_DIR / "README_TEMPLATE.md"
 FEED_URL = "https://slar.se/feeds/all.atom.xml"
 NUM_POSTS = 5
 
-REPOS = "repobee/repobee SpoonLabs/sorald repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
+REPOS = "repobee/repobee SpoonLabs/sorald inria/spoon repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
 USER = "slarse"
 
 LANG_IMAGES = {
@@ -132,16 +132,26 @@ def get_repo_data(repo: str, user: str) -> dict:
     data["monthly_commits_web_url"] = monthly_commits_web_url
 
     data["stargazers_web_url"] = f"https://github.com/{repo}/stargazers"
-
-    data["contributions"] = next(
-        filter(
-            lambda entry: entry["login"] == user,
-            requests.get(f"https://api.github.com/repos/{repo}/contributors").json(),
-        )
-    )["contributions"]
     data["commits_web_url"] = f"https://github.com/{repo}/commits?author={user}"
+    data["contributions"] = get_contributions(repo, user)
 
     return data
+
+
+def get_contributions(repo: str, user: str) -> int:
+    match = None
+    page = 1
+    while not match:
+        contributors = requests.get(
+            f"https://api.github.com/repos/{repo}/contributors?page={page}"
+        ).json()
+        if not contributors:
+            raise ValueError(f"{user} has no contributions in {repo}")
+
+        match = next(filter(lambda entry: entry["login"] == user, contributors), {})
+        page += 1
+
+    return match["contributions"]
 
 
 def clean_excerpt(text: str) -> str:

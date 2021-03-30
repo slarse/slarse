@@ -30,8 +30,8 @@ jobs:
         python update.py
     - name: Commit files on master
       run: |
-        git config --local user.email github-actions[bot]@users.noreply.github.com
-        git config --local user.name github-actions[bot]
+        git config --local user.email "slarse@slar.se"
+        git config --local user.name "Simon Larsén"
 
         git branch master || echo "master already exists"
         git update-ref refs/heads/master $(git rev-parse refs/remotes/origin/master)

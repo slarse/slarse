@@ -1,4 +1,3 @@
-import textwrap
 import pathlib
 import re
 import datetime
@@ -18,12 +17,6 @@ NUM_POSTS = 5
 
 REPOS = "repobee/repobee SpoonLabs/sorald inria/spoon repobee/repobee-junit4 KTH/spork slarse/pygitviz".split()
 USER = "slarse"
-
-LANG_IMAGES = {
-    path.stem.lower(): path.relative_to(CUR_DIR)
-    for path in (CUR_DIR / "lang_images").iterdir()
-    if path.suffix == ".svg"
-}
 
 
 def main():
@@ -49,7 +42,7 @@ def generate_blog_post_table(feed_url: str, num_posts: int) -> str:
 
 
 def generate_repo_table(repos: List[str], user: str) -> str:
-    headers = ["Repo", "Description", "Stars/Lang", "My Contributions"]
+    headers = ["Repo", "Description", "Language", "Stars", "My Contributions"]
     repo_data = (get_repo_data(repo, user) for repo in repos)
 
     def create_commits_badges(data: dict) -> str:
@@ -59,19 +52,13 @@ def generate_repo_table(repos: List[str], user: str) -> str:
         (
             f"[{data['name']}]({data['html_url']})",
             data["description"],
-            f"{create_stargazers_badge(data)} {get_language_image(data['language'])}",
+            data["language"],
+            create_stargazers_badge(data),
             create_commits_badges(data),
         )
         for data in repo_data
     ]
     return tabulate.tabulate(rows, headers=headers, tablefmt="github")
-
-
-def get_language_image(language: str) -> str:
-    return (
-        f'<img src="{LANG_IMAGES[language.lower()]}" '
-        f'alt="{language}" title="{language}" width=32px/>'
-    )
 
 
 def create_commits_30_days_badge(data: dict) -> List[str]:

@@ -15,7 +15,7 @@ TEMPLATE_PATH = CUR_DIR / "README_TEMPLATE.md"
 FEED_URL = "https://slar.se/feeds/all.atom.xml"
 NUM_POSTS = 5
 
-REPOS = "repobee/repobee inria/spoon KTH/spork slarse/rusthon slarse/pygitviz SpoonLabs/sorald".split()
+REPOS = "repobee/repobee inria/spoon KTH/spork slarse/rut slarse/rusthon slarse/pygitviz SpoonLabs/sorald".split()
 USER = "slarse"
 
 
